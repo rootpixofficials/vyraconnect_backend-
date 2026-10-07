@@ -14,7 +14,7 @@ export class QrService {
   static async getNextSerialNumber(productType: string): Promise<number> {
     const lastQr = await prisma.qrCode.findFirst({
       where: { product_type: productType },
-      orderBy: { generated_at: 'desc' },
+      orderBy: { qr_serial: 'desc' },
     });
     
     let nextNum = 1;
