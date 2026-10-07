@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // ---------------------------------------------------------
@@ -171,4 +171,5 @@ model CustomerProduct {
   // Relationships
   customer Customer @relation(fields: [customer_id], references: [id])
 }
+
 
