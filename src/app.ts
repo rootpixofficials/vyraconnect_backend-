@@ -7,6 +7,7 @@ import vehicleRoutes from './routes/vehicle.routes';
 import emergencyRoutes from './routes/emergency.routes';
 import qrRoutes from './routes/qr.routes';
 import batchRoutes from './routes/batch.routes';
+import scanRoutes from './routes/scan.routes';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/admin/vehicles', vehicleRoutes);
 app.use('/api/admin/emergency', emergencyRoutes);
 app.use('/api/admin/qr', qrRoutes);
 app.use('/api/admin/qr-batches', batchRoutes);
+app.use('/api/scan', scanRoutes);
 
 // Dashboard Stats Route
 app.get('/api/admin/dashboard', async (req, res) => {

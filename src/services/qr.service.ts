@@ -36,12 +36,14 @@ export class QrService {
     const qr_serial = `${prefix}-${nextNum.toString().padStart(6, '0')}`;
     const qr_token = this.generateToken();
     const qr_url = `${baseUrl}?token=${qr_token}`;
+    const qr_image_base64 = await QRCode.toDataURL(qr_url, { margin: 1 });
 
     const qrCode = await prisma.qrCode.create({
       data: {
         qr_serial,
         qr_token,
         qr_url,
+        qr_image_base64,
         product_type: productType,
         created_by: adminId || null,
         status: "AVAILABLE"
@@ -59,11 +61,13 @@ export class QrService {
       const qr_serial = `${prefix}-${(startNum + i).toString().padStart(6, '0')}`;
       const qr_token = this.generateToken();
       const qr_url = `${baseUrl}?token=${qr_token}`;
+      const qr_image_base64 = await QRCode.toDataURL(qr_url, { margin: 1 });
       
       qrCodes.push({
         qr_serial,
         qr_token,
         qr_url,
+        qr_image_base64,
         product_type: productType,
         batch_id: batchId,
         created_by: adminId || null,

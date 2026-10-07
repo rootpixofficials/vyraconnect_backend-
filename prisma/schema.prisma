@@ -52,13 +52,14 @@ model Customer {
 }
 
 model QrCode {
-  id             String    @id @default(uuid())
-  qr_serial      String    @unique
-  qr_token       String    @unique
-  qr_url         String
-  customer_id    String?
-  product_type   String
-  status         String    @default("AVAILABLE")
+  id              String    @id @default(uuid())
+  qr_serial       String    @unique
+  qr_token        String    @unique
+  qr_url          String
+  qr_image_base64 String?   @db.LongText
+  customer_id     String?
+  product_type    String
+  status          String    @default("AVAILABLE")
   batch_id       String?
   generated_at   DateTime  @default(now())
   assigned_at    DateTime?
