@@ -31,7 +31,7 @@ export const registerQr = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
     const { 
-      fullName, mobile, email, address, city, state, pincode, // Customer details
+      fullName, name, mobile, email, address, city, state, pincode, // Customer details
       vehicleType, registrationNumber, make, model, color, // Vehicle details
       emergencyName, emergencyRelationship, emergencyMobile // Emergency contact
     } = req.body;
@@ -47,7 +47,7 @@ export const registerQr = async (req: Request, res: Response) => {
       customer = await prisma.customer.create({
         data: {
           customer_code,
-          full_name: fullName,
+          full_name: fullName || name || 'Unknown',
           mobile,
           email,
           address,
@@ -58,17 +58,20 @@ export const registerQr = async (req: Request, res: Response) => {
       });
     }
 
-    // 2. Create Vehicle
-    const vehicle = await prisma.vehicle.create({
-      data: {
-        customer_id: customer.id,
-        vehicle_type: vehicleType,
-        registration_number: registrationNumber,
-        make,
-        model,
-        color
-      }
-    });
+    // 2. Find or Create Vehicle
+    let vehicle = await prisma.vehicle.findUnique({ where: { registration_number: registrationNumber } });
+    if (!vehicle) {
+      vehicle = await prisma.vehicle.create({
+        data: {
+          customer_id: customer.id,
+          vehicle_type: vehicleType || 'Four Wheeler',
+          registration_number: registrationNumber,
+          make,
+          model,
+          color
+        }
+      });
+    }
 
     // 3. Create Emergency Contact if provided
     if (emergencyName && emergencyMobile) {
