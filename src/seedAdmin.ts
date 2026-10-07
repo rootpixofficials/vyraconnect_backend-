@@ -4,29 +4,29 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const username = 'vyarconnectAdmin';
+  const username = 'vyraconnectadmin';
   const password = 'vyraconnect@123';
   
   // Hash the password securely
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Upsert the admin (creates if doesn't exist, updates if it does)
-  const admin = await prisma.admin.upsert({
-    where: { email: username }, // Using email field as the username field
+  // Upsert the user (creates if doesn't exist, updates if it does)
+  const user = await prisma.user.upsert({
+    where: { username: username },
     update: {
       password_hash: hashedPassword,
       name: 'Vyra Admin',
       role: 'SUPER_ADMIN',
     },
     create: {
-      email: username,
+      username: username,
       name: 'Vyra Admin',
       password_hash: hashedPassword,
       role: 'SUPER_ADMIN',
     },
   });
 
-  console.log('✅ Admin user created successfully:', admin.email);
+  console.log('✅ Users table seeded. Admin created:', user.username);
 }
 
 main()

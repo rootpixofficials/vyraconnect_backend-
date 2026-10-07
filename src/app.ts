@@ -64,6 +64,25 @@ app.get('/api/admin/dashboard', async (req, res) => {
   }
 });
 
+// Admin Login Route
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { username } });
+    
+    if (user) {
+      const bcrypt = require('bcryptjs');
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (isMatch) {
+        return res.status(200).json({ success: true, token: 'mock_jwt_token', user });
+      }
+    }
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Backend Server running on http://localhost:${PORT}`);
 });
