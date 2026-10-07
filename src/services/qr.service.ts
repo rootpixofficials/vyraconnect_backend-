@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import QRCode from 'qrcode';
-import { ProductType, QRStatus, Prisma } from '@prisma/client';
 import prisma from '../lib/prisma';
 
 export class QrService {
@@ -12,7 +11,7 @@ export class QrService {
     return QRCode.toDataURL(url);
   }
 
-  static async getNextSerialNumber(productType: ProductType): Promise<number> {
+  static async getNextSerialNumber(productType: string): Promise<number> {
     const lastQr = await prisma.qrCode.findFirst({
       where: { product_type: productType },
       orderBy: { generated_at: 'desc' },
@@ -31,7 +30,7 @@ export class QrService {
     return nextNum;
   }
 
-  static async generateSingleQr(productType: ProductType, baseUrl: string, adminId?: string) {
+  static async generateSingleQr(productType: string, baseUrl: string, adminId?: string) {
     const prefix = productType.toString();
     const nextNum = await this.getNextSerialNumber(productType);
     const qr_serial = `${prefix}-${nextNum.toString().padStart(6, '0')}`;
@@ -45,13 +44,13 @@ export class QrService {
         qr_url,
         product_type: productType,
         created_by: adminId || null,
-        status: QRStatus.AVAILABLE
+        status: "AVAILABLE"
       }
     });
     return qrCode;
   }
 
-  static async generateBulkQr(batchId: string, productType: ProductType, quantity: number, baseUrl: string, adminId?: string) {
+  static async generateBulkQr(batchId: string, productType: string, quantity: number, baseUrl: string, adminId?: string) {
     const prefix = productType.toString();
     const startNum = await this.getNextSerialNumber(productType);
     
@@ -68,7 +67,7 @@ export class QrService {
         product_type: productType,
         batch_id: batchId,
         created_by: adminId || null,
-        status: QRStatus.AVAILABLE
+        status: "AVAILABLE"
       });
     }
 
@@ -84,7 +83,7 @@ export class QrService {
       where: { id: qrId },
       data: { 
         customer_id: customerId,
-        status: QRStatus.ASSIGNED,
+        status: "ASSIGNED",
         assigned_at: new Date()
       }
     });
@@ -94,7 +93,7 @@ export class QrService {
     return prisma.qrCode.update({
       where: { id: qrId },
       data: {
-        status: QRStatus.BLOCKED,
+        status: "BLOCKED",
         blocked_at: new Date(),
         blocked_reason: reason
       }

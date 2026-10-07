@@ -1,19 +1,18 @@
 import { Request, Response } from 'express';
-import { ProductType } from '@prisma/client';
 import { QrService } from '../services/qr.service';
 import prisma from '../lib/prisma';
 
 export const generateSingleQr = async (req: Request, res: Response) => {
   try {
-    const { productType } = req.body; // ProductType enum
+    const { productType } = req.body;
     if (!productType) {
       return res.status(400).json({ error: 'Product type is required' });
     }
 
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000/scan';
-    const adminId = (req as any).user?.id; // Assuming auth middleware sets req.user
+    const adminId = (req as any).user?.id;
 
-    const qrCode = await QrService.generateSingleQr(productType as ProductType, baseUrl, adminId);
+    const qrCode = await QrService.generateSingleQr(String(productType), baseUrl, adminId);
     return res.status(201).json({ message: 'QR generated successfully', qrCode });
   } catch (error: any) {
     console.error('Error generating single QR:', error);

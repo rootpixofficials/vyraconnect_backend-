@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { ProductType, BatchStatus } from '@prisma/client';
 import { QrService } from '../services/qr.service';
 import { PdfService } from '../services/pdf.service';
 import prisma from '../lib/prisma';
@@ -20,15 +19,15 @@ export const generateBulkQr = async (req: Request, res: Response) => {
     const batch = await prisma.qrBatch.create({
       data: {
         batch_code: batchCode,
-        product_type: productType as ProductType,
+        product_type: String(productType),
         quantity,
-        status: BatchStatus.GENERATING,
+        status: "GENERATING",
         created_by: adminId || null,
       }
     });
 
     // Generate QRs
-    const qrCodes = await QrService.generateBulkQr(batch.id, productType as ProductType, quantity, baseUrl, adminId);
+    const qrCodes = await QrService.generateBulkQr(batch.id, String(productType), quantity, baseUrl, adminId);
 
     // Update batch status and count
     await prisma.qrBatch.update({
@@ -46,7 +45,7 @@ export const generateBulkQr = async (req: Request, res: Response) => {
     const completedBatch = await prisma.qrBatch.update({
       where: { id: batch.id },
       data: {
-        status: BatchStatus.COMPLETED,
+        status: "COMPLETED",
         pdf_path: pdfPath
       }
     });
