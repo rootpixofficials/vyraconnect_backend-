@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import customerRoutes from './routes/customer.routes';
 import vehicleRoutes from './routes/vehicle.routes';
 import emergencyRoutes from './routes/emergency.routes';
+import reportRoutes from './routes/report.routes';
 import qrRoutes from './routes/qr.routes';
 import batchRoutes from './routes/batch.routes';
 import scanRoutes from './routes/scan.routes';
@@ -29,6 +30,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/admin/customers', customerRoutes);
 app.use('/api/admin/vehicles', vehicleRoutes);
 app.use('/api/admin/emergency', emergencyRoutes);
+app.use('/api/admin/reports', reportRoutes);
 app.use('/api/admin/qr', qrRoutes);
 app.use('/api/admin/qr-batches', batchRoutes);
 app.use('/api/scan', scanRoutes);
