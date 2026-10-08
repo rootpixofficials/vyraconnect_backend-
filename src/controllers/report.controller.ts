@@ -37,7 +37,9 @@ export const getReportDashboard = async (req: Request, res: Response) => {
       where: { customer_id: { not: null }, batch_id: { not: null } },
       _count: true,
       orderBy: {
-        _count: 'desc'
+        _count: {
+          batch_id: 'desc'
+        }
       },
       take: 1
     });
