@@ -85,14 +85,14 @@ export const registerQr = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'QR Code is already registered and active' });
     }
     if (qr.status === 'BLOCKED' || qr.status === 'REPLACED' || qr.status === 'EXPIRED') {
-      return res.status(400).json({ error: \`Cannot register QR code. Status is \${qr.status}\` });
+      return res.status(400).json({ error: `Cannot register QR code. Status is ${qr.status}` });
     }
 
     return await prisma.$transaction(async (tx) => {
       // 1. Create or Find Customer by Mobile
       let customer = await tx.customer.findUnique({ where: { mobile } });
       if (!customer) {
-        const customer_code = \`CUST-\${Math.floor(100000 + Math.random() * 900000)}\`;
+        const customer_code = `CUST-${Math.floor(100000 + Math.random() * 900000)}`;
         customer = await tx.customer.create({
           data: {
             customer_code,

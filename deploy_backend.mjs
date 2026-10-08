@@ -2,15 +2,17 @@ import { Client } from 'ssh2';
 const conn = new Client();
 conn.on('ready', () => {
   const script = `
-    cd /home/master/applications/mhenvbbpem/public_html/backend
+    cd /home/1650272.cloudwaysapps.com/mhenvbbpem/public_html/backend
     
-    export PATH=$PATH:/usr/bin:/home/master/.nvm/versions/node/v20.5.1/bin
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm use 20.18.0
     
     git pull origin main
     
-    npx prisma db push --accept-data-loss
+    npm install
     
-    node node_modules/pm2/bin/pm2 restart vyra-api
+    /home/1650272.cloudwaysapps.com/mhenvbbpem/public_html/backend/node_modules/pm2/bin/pm2 restart vyra-api
   `;
   
   conn.exec(script, (err, stream) => {

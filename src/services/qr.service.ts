@@ -48,9 +48,9 @@ export class QrService {
   static async generateSingleQr(productType: string, baseUrl: string, adminId?: string) {
     const prefix = productType.toString();
     const nextNum = await this.getNextSerialNumber(productType);
-    const qr_serial = \`\${prefix}-\${nextNum.toString().padStart(6, '0')}\`;
+    const qr_serial = `${prefix}-${nextNum.toString().padStart(6, '0')}`;
     const qr_token = this.generateToken();
-    const qr_url = \`\${baseUrl}?token=\${qr_token}\`;
+    const qr_url = `${baseUrl}?token=${qr_token}`;
     const qr_image_base64 = await QRCode.toDataURL(qr_url, { margin: 1 });
 
     const qrCode = await prisma.$transaction(async (tx) => {
@@ -79,9 +79,9 @@ export class QrService {
     const auditLogsData = [];
     
     for (let i = 0; i < quantity; i++) {
-      const qr_serial = \`\${prefix}-\${(startNum + i).toString().padStart(6, '0')}\`;
+      const qr_serial = `${prefix}-${(startNum + i).toString().padStart(6, '0')}`;
       const qr_token = this.generateToken();
-      const qr_url = \`\${baseUrl}?token=\${qr_token}\`;
+      const qr_url = `${baseUrl}?token=${qr_token}`;
       const qr_image_base64 = await QRCode.toDataURL(qr_url, { margin: 1 });
       
       qrCodesData.push({
@@ -121,7 +121,7 @@ export class QrService {
     return prisma.$transaction(async (tx) => {
       const qr = await tx.qrCode.findUnique({ where: { id: qrId } });
       if (!qr) throw new Error("QR Code not found");
-      if (qr.status !== "AVAILABLE") throw new Error(\`Cannot assign QR with status \${qr.status}\`);
+      if (qr.status !== "AVAILABLE") throw new Error(`Cannot assign QR with status ${qr.status}`);
       
       const customer = await tx.customer.findUnique({ where: { id: customerId } });
       if (!customer) throw new Error("Customer not found");
@@ -145,7 +145,7 @@ export class QrService {
     return prisma.$transaction(async (tx) => {
       const qr = await tx.qrCode.findUnique({ where: { id: qrId } });
       if (!qr) throw new Error("QR Code not found");
-      if (qr.status !== "ASSIGNED") throw new Error(\`Cannot activate QR with status \${qr.status}\`);
+      if (qr.status !== "ASSIGNED") throw new Error(`Cannot activate QR with status ${qr.status}`);
       if (!qr.customer_id) throw new Error("QR is not assigned to a customer");
 
       const now = new Date();
@@ -172,7 +172,7 @@ export class QrService {
     return prisma.$transaction(async (tx) => {
       const qr = await tx.qrCode.findUnique({ where: { id: qrId } });
       if (!qr) throw new Error("QR Code not found");
-      if (qr.status === "BLOCKED" || qr.status === "REPLACED") throw new Error(\`Cannot block QR with status \${qr.status}\`);
+      if (qr.status === "BLOCKED" || qr.status === "REPLACED") throw new Error(`Cannot block QR with status ${qr.status}`);
 
       const updatedQr = await tx.qrCode.update({
         where: { id: qrId },
@@ -193,7 +193,7 @@ export class QrService {
     return prisma.$transaction(async (tx) => {
       const qr = await tx.qrCode.findUnique({ where: { id: qrId } });
       if (!qr) throw new Error("QR Code not found");
-      if (qr.status !== "BLOCKED") throw new Error(\`Cannot unblock QR with status \${qr.status}\`);
+      if (qr.status !== "BLOCKED") throw new Error(`Cannot unblock QR with status ${qr.status}`);
 
       // Determine correct restoration state based on timestamps
       let restoreStatus = "AVAILABLE";
@@ -231,9 +231,9 @@ export class QrService {
       const productType = oldQr.product_type;
       const nextNum = await this.getNextSerialNumber(productType);
       const prefix = productType.toString();
-      const qr_serial = \`\${prefix}-\${nextNum.toString().padStart(6, '0')}\`;
+      const qr_serial = `${prefix}-${nextNum.toString().padStart(6, '0')}`;
       const qr_token = this.generateToken();
-      const qr_url = \`\${baseUrl}?token=\${qr_token}\`;
+      const qr_url = `${baseUrl}?token=${qr_token}`;
       const qr_image_base64 = await QRCode.toDataURL(qr_url, { margin: 1 });
 
       // Create new QR Code inheriting customer and state
@@ -276,7 +276,7 @@ export class QrService {
       });
 
       await this.createAuditLog(tx, oldQr.id, "REPLACED", adminId, oldQr.customer_id, reason, oldQr.status, "REPLACED", { replacement_qr_id: newQr.id });
-      await this.createAuditLog(tx, newQr.id, "GENERATED_AS_REPLACEMENT", adminId, oldQr.customer_id, \`Replaced \${oldQr.qr_serial}\`, null, newQr.status, { replaced_qr_id: oldQr.id });
+      await this.createAuditLog(tx, newQr.id, "GENERATED_AS_REPLACEMENT", adminId, oldQr.customer_id, `Replaced ${oldQr.qr_serial}`, null, newQr.status, { replaced_qr_id: oldQr.id });
       
       return newQr;
     });
