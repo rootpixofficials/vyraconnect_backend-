@@ -62,16 +62,33 @@ model QrCode {
   status          String    @default("AVAILABLE")
   batch_id       String?
   generated_at   DateTime  @default(now())
+  
+  // Lifecycle Timestamps & Actors
   assigned_at    DateTime?
+  assigned_by    String?
   activated_at   DateTime?
+  activated_by   String?
+  expires_at     DateTime?
   blocked_at     DateTime?
+  blocked_by     String?
   blocked_reason String?
+  unblocked_at   DateTime?
+  unblocked_by   String?
+  
+  // Replacement Data
+  replaced_qr_id     String?
+  replacement_qr_id  String?
+  replacement_reason String?
+  replaced_by        String?
+  replaced_at        DateTime?
+
   created_by     String?
   updated_at     DateTime  @updatedAt
 
   // Relationships
   customer Customer? @relation(fields: [customer_id], references: [id])
   batch    QrBatch?  @relation(fields: [batch_id], references: [id])
+  scans    QrScanLog[]
 }
 
 model QrBatch {
@@ -139,12 +156,29 @@ model VehicleRegistrationHistory {
 model QrAuditLog {
   id           String   @id @default(uuid())
   qr_id        String
+  customer_id  String?
   action       String
+  reason       String?
   performed_by String?
   old_status   String?
   new_status   String?
-  metadata     String?
+  metadata     String?  @db.Text
   created_at   DateTime @default(now())
+}
+
+model QrScanLog {
+  id               String   @id @default(uuid())
+  qr_id            String
+  scan_result      String?  
+  resulting_status String?
+  device_type      String?
+  browser          String?
+  os               String?
+  ip_address       String?  
+  location         String?
+  created_at       DateTime @default(now())
+
+  qr QrCode @relation(fields: [qr_id], references: [id])
 }
 
 model OtpVerification {
