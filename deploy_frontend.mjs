@@ -8,6 +8,7 @@ conn.on('ready', () => {
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     nvm use 20.18.0
     
+    git checkout -- .
     git pull origin main
     
     npm install
